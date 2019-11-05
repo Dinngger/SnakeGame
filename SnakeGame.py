@@ -6,7 +6,6 @@ import random
 class SnakeGame:
 
     class Direction:
-        UNKNOW = 0
         RIGHT = 1
         LEFT = 2
         UP = 3
@@ -18,22 +17,31 @@ class SnakeGame:
         self.display = False
         pygame.init()
         self.over = False
+        self.Q = 0
+        self.restart()
 
-        self.snakePosition = [size[0] // 2, size[1] // 2]
-        self.snakeSegments = [[size[0] // 2, size[1] // 2]]
-        self.raspberryPosition = [size[0] // 2, size[1] // 2]
+    def restart(self):
+        self.down = False
+        pos = [self.size[0] // 2 - 1, self.size[1] // 2 - 1]
+        self.snakePosition = [pos[0], pos[1]]
+        self.snakeSegments = [[pos[0], pos[1]]]
+        self.raspberryPosition = [pos[0], pos[1]]
         self.raspberrySpawned = 1
         self.direction = self.Direction.RIGHT
 
     def gameOver(self):
+        self.down = True
+        self.Q = -1
+
+    def quit(self):
+        self.over = True
         print("Game Over!")
         pygame.quit()
-        self.over = True
 
     def getKey(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.gameOver()
+                self.quit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT or event.key == ord('d'):
                     self.direction = self.Direction.RIGHT
@@ -47,6 +55,7 @@ class SnakeGame:
                     pygame.event.post(pygame.event.Event(pygame.QUIT))
 
     def next(self):
+        self.Q = 0
         # 根据方向移动蛇头的坐标
         if self.direction == self.Direction.RIGHT:
             self.snakePosition[0] += 1
@@ -61,6 +70,7 @@ class SnakeGame:
         # 判断是否吃掉了树莓
         if self.snakePosition[0] == self.raspberryPosition[0] and self.snakePosition[1] == self.raspberryPosition[1]:
             self.raspberrySpawned = 0
+            self.Q = 1
         else:
             self.snakeSegments.pop()
         # 如果吃掉树莓，则重新生成树莓
@@ -88,7 +98,7 @@ class SnakeGame:
             if self.snakePosition[0] == snakeBody[0] and self.snakePosition[1] == snakeBody[1]:
                 self.gameOver()
 
-    def render(self):
+    def render(self, wait=True):
         if not self.display:
             self.display = True
             self.redColour = pygame.Color(255, 0, 0)
@@ -110,7 +120,8 @@ class SnakeGame:
                          pygame.Rect(self.raspberryPosition[0] * self.block_size, self.raspberryPosition[1] * self.block_size,
                                      self.block_size, self.block_size))
         pygame.display.flip()
-        self.fpsClock.tick(10)
+        if wait:
+            self.fpsClock.tick(10)
 
     def getNumpy(self):
         surface = np.zeros(self.size, dtype=np.float32)
@@ -126,3 +137,5 @@ if __name__ == "__main__":
         game.render()
         game.getKey()
         game.next()
+        if game.down:
+            game.restart()

@@ -23,16 +23,17 @@ class AutoEncoder(nn.Module):
 
 
 model = AutoEncoder()
-model.load_state_dict(torch.load('./parameter.pkl'))
+model.load_state_dict(torch.load('./AEparam.pkl'))
 criterion = nn.MSELoss()
 optimizer = optim.SGD(model.parameters(), lr=1e-3)
 game = SnakeGame.SnakeGame(size=[24, 24])
 plt.ion()
 fig = plt.figure()
 
-train = False
+train = True
 
 if not train:
+    model.eval()
     fig1 = fig.add_subplot(221)
     fig2 = fig.add_subplot(222)
     fig3 = fig.add_subplot(223)
@@ -75,4 +76,4 @@ while not game.over:
     game.next()
 
 if train:
-    torch.save(model.state_dict(), './parameter.pkl')
+    torch.save(model.state_dict(), './AEparam.pkl')
