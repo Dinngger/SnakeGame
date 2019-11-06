@@ -74,6 +74,8 @@ while not game.over:
     game.render()
     game.getKey()
     game.next()
+    if game.down:
+        game.restart()
 
 if train:
     torch.save(model.state_dict(), './AEparam.pkl')

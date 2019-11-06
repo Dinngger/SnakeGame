@@ -42,9 +42,9 @@ class QLearning(nn.Module):
 
 
 model = QLearning()
-model.load_state_dict(torch.load('./QLparam.pkl'))
+# model.load_state_dict(torch.load('./QLparam.pkl'))
 criterion = nn.MSELoss()
-optimizer = optim.Adam(model.parameters(), lr=1e-3)
+optimizer = optim.SGD(model.parameters(), lr=1e-3)
 game = SnakeGame.SnakeGame(size=[SIZE, SIZE])
 
 plt.ion()
@@ -62,7 +62,7 @@ while not game.over:
     game.next()
 
     nQ = torch.Tensor([[game.Q]])
-    for _ in range(10):
+    for _ in range(1):
         for i in range(1):
             p2, a2, r2, h, h2, Q, x = model(p, a, r)
             loss = criterion(p2, p)
