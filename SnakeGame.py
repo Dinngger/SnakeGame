@@ -55,7 +55,7 @@ class SnakeGame:
                     pygame.event.post(pygame.event.Event(pygame.QUIT))
 
     def next(self):
-        self.Q = 0
+        self.Q = -0.02
         # 根据方向移动蛇头的坐标
         if self.direction == self.Direction.RIGHT:
             self.snakePosition[0] += 1
